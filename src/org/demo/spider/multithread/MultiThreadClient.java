@@ -6,10 +6,13 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import org.demo.spider.multithread.db.DBHelper;
+import org.demo.spider.multithread.model.SpiderQueue;
+import org.demo.spider.multithread.thread.ConsumerRunnable;
 import org.demo.spider.multithread.thread.InsertDBRunnable;
 import org.demo.spider.multithread.thread.LocalParserRunnable;
 import org.demo.spider.multithread.thread.ParserRunner;
-import org.utils.naga.nums.NumberUtils;
+import org.demo.spider.multithread.thread.ProducerRunnable;
+import org.utils.naga.nums.RandomUtils;
 import org.utils.naga.threads.ThreadUtils;
 
 public class MultiThreadClient {
@@ -29,8 +32,8 @@ public class MultiThreadClient {
     }
     
     private ThreadPoolExecutor getThreadPool() {
-        final int MAXIMUM_POOL_SIZE = 120;
-        final int CORE_POOL_SIZE = 100;
+        final int MAXIMUM_POOL_SIZE = 10;
+        final int CORE_POOL_SIZE = 7;
         return new ThreadPoolExecutor(CORE_POOL_SIZE, MAXIMUM_POOL_SIZE, 2, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(MAXIMUM_POOL_SIZE), new ThreadPoolExecutor.DiscardOldestPolicy());
     }
     
@@ -55,6 +58,7 @@ public class MultiThreadClient {
         return queue.size();
     }
     
+    // 测试只解析Web网页的线程运行情况
     private void testMultiThreadParser(int times) {
         for (int i = 0; i < times; i++) {
             poolQueueFull(mThreadPool);
@@ -62,13 +66,16 @@ public class MultiThreadClient {
         }
     }
     
+    // 测试只向数据库中插入数据的线程运行情况
     private void testMultiThreadInsert(int count) {
+        RandomUtils random = new RandomUtils();
         for (int i = 0; i < count; i++) {
-            mThreadPool.execute(new InsertDBRunnable(helper, NumberUtils.randomInteger(10, 200), i + 1));
+            mThreadPool.execute(new InsertDBRunnable(helper, random.nextInt(10, 200), i + 1));
             ThreadUtils.sleep(3);
         }
     }
     
+    // 测试只解析本地HTML文件的线程运行情况
     private void testMultiThreadLocal(int count) {
         String localHTML = "F:/Temp/cnblogs.html";
         for (int i = 0; i < count; i++) {
@@ -77,8 +84,21 @@ public class MultiThreadClient {
         }
     }
     
+    // 测试生产者与消费者的线程运行情况
+    private void testPCMultiThread(int count) {
+        SpiderQueue queue = new SpiderQueue();
+        RandomUtils random = new RandomUtils();
+        
+        for (int i = 0; i < count; i++) {
+            mThreadPool.execute(new ProducerRunnable(queue));
+            mThreadPool.execute(new ConsumerRunnable(queue));
+            
+            ThreadUtils.sleep(random.nextInt(300, 500));
+        }
+    }
+    
     private void testMulti() {
-        int testFlag = 2;
+        int testFlag = 3;
         switch (testFlag) {
         case 0:
             // 多线程解析
@@ -93,6 +113,11 @@ public class MultiThreadClient {
         case 2:
             // 本地HTML解析并入库
             testMultiThreadLocal(1000000000);
+            break;
+            
+        case 3:
+            // 生产者与消费者
+            testPCMultiThread(1000000000);
             break;
 
         default:

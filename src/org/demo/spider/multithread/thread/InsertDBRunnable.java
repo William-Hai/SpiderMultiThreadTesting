@@ -2,7 +2,7 @@ package org.demo.spider.multithread.thread;
 
 import org.demo.spider.multithread.db.DBHelper;
 import org.demo.spider.multithread.model.WebInfoModel;
-import org.utils.naga.nums.NumberUtils;
+import org.utils.naga.nums.RandomUtils;
 import org.utils.naga.str.StringUtils;
 
 /**
@@ -37,11 +37,12 @@ public class InsertDBRunnable implements Runnable {
     
     private void initArray() {
         int length = models.length;
+        RandomUtils randomUtils = new RandomUtils();
         for (int i = 0; i < length; i++) {
             String random = StringUtils.randomString(8);
             models[i] = new WebInfoModel();
             models[i].setAddress(URL_TEMPLATE.replace("xxx", random));
-            models[i].setLevel(NumberUtils.randomInteger(1, 8));
+            models[i].setLevel(randomUtils.nextInt(1, 8));
             models[i].setName(random);
         }
     }
