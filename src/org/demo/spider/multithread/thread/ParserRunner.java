@@ -8,7 +8,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.utils.naga.web.impl.WebHTMLParserImpl;
-import org.utils.naga.web.poke.HTMLParserStrategy;
+import org.utils.naga.web.poke.HTMLParserUtils;
 
 /**
  * <p>
@@ -22,7 +22,7 @@ import org.utils.naga.web.poke.HTMLParserStrategy;
  */
 public class ParserRunner implements Runnable {
 
-    private HTMLParserStrategy htmlParserStrategy;
+    private HTMLParserUtils htmlParserStrategy;
     private int index;
     private String url;
     private List<String> subUrlList;
@@ -32,7 +32,7 @@ public class ParserRunner implements Runnable {
         index = _index;
         
         subUrlList = new ArrayList<>();
-        htmlParserStrategy = new HTMLParserStrategy(new WebHTMLParserImpl());
+        htmlParserStrategy = new HTMLParserUtils(new WebHTMLParserImpl());
     }
     
     @Override

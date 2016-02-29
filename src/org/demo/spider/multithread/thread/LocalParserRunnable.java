@@ -12,7 +12,7 @@ import org.jsoup.select.Elements;
 import org.utils.naga.nums.RandomUtils;
 import org.utils.naga.str.StringUtils;
 import org.utils.naga.web.impl.LocalHTMLParserImpl;
-import org.utils.naga.web.poke.HTMLParserStrategy;
+import org.utils.naga.web.poke.HTMLParserUtils;
 
 /**
  * <p>
@@ -26,7 +26,7 @@ import org.utils.naga.web.poke.HTMLParserStrategy;
  */
 public class LocalParserRunnable implements Runnable {
 
-    private HTMLParserStrategy htmlParserStrategy;
+    private HTMLParserUtils htmlParserStrategy;
     private String localHTMLPath = "";
     private List<WebInfoModel> subUrlList;
     private int index;
@@ -38,7 +38,7 @@ public class LocalParserRunnable implements Runnable {
         subUrlList = new ArrayList<>();
         index = _index;
         
-        htmlParserStrategy = new HTMLParserStrategy(new LocalHTMLParserImpl());
+        htmlParserStrategy = new HTMLParserUtils(new LocalHTMLParserImpl());
     }
     
     @Override
